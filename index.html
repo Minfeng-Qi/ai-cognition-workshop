@@ -1,0 +1,715 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]{display:none!important}img{max-width:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>AI Cognition Workshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+/* Layout: a single reading column of "class handouts"; the 60-minute bar is the spine, activities are numbered A1–A6 in run order. Highlighter yellow marks what matters, red pen marks errors. */
+:root{
+  --paper:#f5f6fa; --sheet:#ffffff; --ink:#18213b; --ink-soft:#4a5372; --rule:#dde1ec;
+  --marker:#ffe04a; --marker-ink:#3a3000; --pen:#c93a3a; --ok:#21825a;
+  --c-ai:#3550c8; --c-co:#d99a00; --c-hu:#21825a;
+  --shadow:0 1px 0 rgba(24,33,59,.06),0 6px 18px -10px rgba(24,33,59,.25);
+  --f-display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f1320; --sheet:#171c2c; --ink:#e7eaf4; --ink-soft:#a5adc6; --rule:#2a3149;
+  --marker:#f5d43a; --marker-ink:#2a2300; --pen:#ff7a72; --ok:#4fc58f;
+  --c-ai:#7f95ff; --c-co:#f0b832; --c-hu:#4fc58f;
+  --shadow:0 1px 0 rgba(0,0,0,.4),0 8px 22px -12px rgba(0,0,0,.7); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f1320; --sheet:#171c2c; --ink:#e7eaf4; --ink-soft:#a5adc6; --rule:#2a3149;
+  --marker:#f5d43a; --marker-ink:#2a2300; --pen:#ff7a72; --ok:#4fc58f;
+  --c-ai:#7f95ff; --c-co:#f0b832; --c-hu:#4fc58f;
+  --shadow:0 1px 0 rgba(0,0,0,.4),0 8px 22px -12px rgba(0,0,0,.7); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:400 17px/1.6 var(--f-body);margin:0}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.1;margin:0}
+h1{font-size:clamp(2.2rem,6vw,3.9rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.15rem;font-weight:700}
+p{margin:0}
+a{color:var(--c-ai)}
+.mark{background:linear-gradient(transparent 55%,var(--marker) 55%,var(--marker) 92%,transparent 92%);padding:0 .1em}
+.eyebrow{font:600 .78rem/1.2 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.mono{font-family:var(--f-mono)}
+.muted{color:var(--ink-soft)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--c-ai);outline-offset:2px}
+
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:1px solid var(--rule)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.topbar .wrap{display:flex;align-items:center;gap:12px;padding-block:10px;flex-wrap:wrap}
+.topbar nav{display:flex;gap:4px;flex-wrap:wrap;flex:1;min-width:0}
+.topbar nav a{font:600 .8rem var(--f-mono);text-decoration:none;color:var(--ink);padding:6px 9px;border-radius:6px}
+.topbar nav a:hover{background:var(--sheet)}
+.modes{display:flex;border:1px solid var(--rule);border-radius:8px;overflow:hidden;background:var(--sheet)}
+.modes button{border:0;background:none;padding:6px 12px;font:600 .8rem var(--f-mono)}
+.modes button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+
+/* hero */
+.hero{padding-block:44px 28px;display:grid;gap:18px}
+.hero .meta{display:flex;flex-wrap:wrap;gap:8px 18px;font:600 .9rem var(--f-mono);color:var(--ink-soft)}
+.thesis{font-size:clamp(1.1rem,2.4vw,1.35rem);max-width:60ch;line-height:1.5}
+.join{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:var(--sheet);border:1px solid var(--rule);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+.join #qr{background:#fff;padding:8px;border-radius:8px;line-height:0}
+.join #qr img,.join #qr canvas{width:132px;height:132px}
+.join .txt{flex:1;min-width:0;display:grid;gap:6px}
+.join code{font:600 .9rem var(--f-mono);word-break:break-all}
+
+/* sections */
+section.block{padding-block:40px 8px;border-top:1px solid var(--rule);display:grid;gap:18px;scroll-margin-top:70px}
+.head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.tag{font:700 .8rem var(--f-mono);background:var(--ink);color:var(--paper);padding:3px 8px;border-radius:5px;letter-spacing:.04em}
+.time{font:600 .85rem var(--f-mono);color:var(--ink-soft)}
+.lede{max-width:65ch}
+
+/* 60-min bar */
+.bar60{display:flex;height:58px;border-radius:10px;overflow:hidden;border:1px solid var(--rule);background:var(--sheet)}
+.bar60 a{display:flex;flex-direction:column;justify-content:center;padding:0 6px;text-decoration:none;color:var(--ink);border-right:1px solid var(--rule);min-width:0;overflow:hidden}
+.bar60 a:last-child{border-right:0}
+.bar60 a.act{background:color-mix(in srgb,var(--marker) 55%,var(--sheet))}
+.bar60 b{font:700 .72rem var(--f-mono);white-space:nowrap}
+.bar60 span{font-size:.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink-soft)}
+.ticks{display:flex;justify-content:space-between;font:400 .72rem var(--f-mono);color:var(--ink-soft);margin-top:4px}
+.runtable{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font:600 .75rem var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)}
+td.t{font:600 .85rem var(--f-mono);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* script */
+details.script{background:var(--sheet);border:1px dashed var(--ink-soft);border-radius:10px;padding:0 16px}
+details.script summary{cursor:pointer;padding:12px 0;font:600 .82rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft)}
+details.script .body{display:grid;gap:12px;padding-bottom:16px;max-width:70ch}
+.say{border-left:3px solid var(--marker);padding-left:12px}
+.say::before{content:"SAY";font:700 .7rem var(--f-mono);color:var(--ink-soft);display:block;letter-spacing:.08em}
+.do{font-style:italic;color:var(--ink-soft)}
+.do::before{content:"DO  ";font:700 .7rem var(--f-mono);font-style:normal;letter-spacing:.08em}
+body.participant .presenter{display:none!important}
+
+/* activity card */
+.card{background:var(--sheet);border:1px solid var(--rule);border-radius:14px;padding:20px;box-shadow:var(--shadow);display:grid;gap:16px;min-width:0}
+.btn{border:1.5px solid var(--ink);background:var(--sheet);padding:10px 16px;border-radius:9px;font-weight:700}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.small{padding:6px 10px;font-size:.85rem}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.status{font:400 .78rem var(--f-mono);color:var(--ink-soft)}
+.pill{display:inline-block;font:700 .72rem var(--f-mono);padding:3px 8px;border-radius:99px;letter-spacing:.04em}
+.pill.ai{background:color-mix(in srgb,var(--c-ai) 18%,transparent);color:var(--c-ai)}
+.pill.hu{background:color-mix(in srgb,var(--c-hu) 18%,transparent);color:var(--c-hu)}
+.pill.co{background:color-mix(in srgb,var(--c-co) 22%,transparent);color:var(--c-co)}
+
+/* guess */
+.student{font-family:var(--f-mono);font-size:.92rem;background:var(--paper);border-radius:8px;padding:12px}
+.feedback{font-size:1.1rem;line-height:1.55;border-left:4px solid var(--rule);padding-left:14px}
+.vote2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vote2 button{padding:16px 10px;border-radius:12px;border:2px solid var(--rule);background:var(--paper);font:700 1.05rem var(--f-display)}
+.vote2 button.pick{border-color:var(--ink)}
+.splitbar{display:flex;height:28px;border-radius:7px;overflow:hidden;background:var(--paper);font:700 .75rem var(--f-mono)}
+.splitbar div{display:flex;align-items:center;padding:0 8px;color:#fff;white-space:nowrap;min-width:0;overflow:hidden}
+.reveal{border-radius:10px;padding:12px 14px;background:color-mix(in srgb,var(--marker) 30%,var(--sheet))}
+
+/* quiz */
+.quiz-q{font:700 clamp(1.2rem,3vw,1.6rem)/1.25 var(--f-display)}
+.timer{height:8px;border-radius:9px;background:var(--paper);overflow:hidden}
+.timer i{display:block;height:100%;background:var(--ink);width:100%;transition:width .1s linear}
+.answers{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:10px}
+.answers button{text-align:left;padding:16px;border-radius:12px;border:0;color:#fff;font-weight:700;font-size:1rem;display:flex;gap:10px;align-items:flex-start;min-height:72px}
+.answers button .sh{font-size:1.2rem;line-height:1}
+.answers button:nth-child(1){background:#c8323c}.answers button:nth-child(2){background:#2f5fd0}
+.answers button:nth-child(3){background:#b98200}.answers button:nth-child(4){background:#1f8a4c}
+.answers button.dim{opacity:.3}
+.answers button.right{outline:4px solid var(--ink);outline-offset:2px;opacity:1}
+.score{font:700 1.1rem var(--f-mono);font-variant-numeric:tabular-nums}
+.board{display:grid;gap:6px;counter-reset:r}
+.board div{display:grid;grid-template-columns:2.2em 1fr auto;gap:10px;padding:8px 12px;border-radius:8px;background:var(--paper);font-variant-numeric:tabular-nums}
+.board div::before{counter-increment:r;content:counter(r);font:700 .9rem var(--f-mono);color:var(--ink-soft)}
+.board div.me{background:color-mix(in srgb,var(--marker) 45%,var(--sheet))}
+.board .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+input[type=text],textarea{width:100%;font:inherit;padding:10px 12px;border-radius:9px;border:1.5px solid var(--rule);background:var(--paper);color:var(--ink)}
+textarea{min-height:76px;resize:vertical}
+
+/* sort */
+.legend{display:flex;gap:8px;flex-wrap:wrap}
+.sortlist{display:grid;gap:10px}
+.sortitem{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px;border:1px solid var(--rule);border-radius:10px;background:var(--paper)}
+.seg{display:flex;border:1.5px solid var(--rule);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--sheet);padding:7px 10px;font:700 .75rem var(--f-mono)}
+.seg button+button{border-left:1.5px solid var(--rule)}
+.seg button[aria-pressed="true"][data-b="ai"]{background:var(--c-ai);color:#fff}
+.seg button[aria-pressed="true"][data-b="co"]{background:var(--c-co);color:#1c1400}
+.seg button[aria-pressed="true"][data-b="hu"]{background:var(--c-hu);color:#fff}
+.sortitem .splitbar{grid-column:1/-1;height:20px}
+@media (max-width:560px){.sortitem{grid-template-columns:1fr}}
+
+/* lab */
+.stations{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:14px}
+.station{display:grid;gap:12px;align-content:start}
+.station h3{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.station ol{margin:0;padding-left:1.2em;display:grid;gap:6px}
+.tools{display:grid;gap:8px}
+.tools a{display:block;padding:9px 11px;border:1px solid var(--rule);border-radius:9px;text-decoration:none;color:var(--ink);background:var(--paper)}
+.tools a b{color:var(--c-ai)}
+.tools a small{display:block;color:var(--ink-soft);font-size:.82rem;line-height:1.35}
+.prompt{position:relative;font:400 .82rem/1.5 var(--f-mono);background:var(--paper);border:1px solid var(--rule);border-radius:9px;padding:12px;white-space:pre-wrap;max-height:220px;overflow:auto}
+.stars{display:flex;gap:4px}
+.stars button{width:38px;height:38px;border-radius:8px;border:1.5px solid var(--rule);background:var(--paper);font:700 .9rem var(--f-mono)}
+.stars button[aria-pressed="true"]{background:var(--marker);color:var(--marker-ink);border-color:var(--marker)}
+.avg{font:700 .85rem var(--f-mono);color:var(--ink-soft)}
+.clock{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.clock .face{font:700 2.4rem var(--f-mono);font-variant-numeric:tabular-nums;min-width:4.2ch}
+.clock .face.low{color:var(--pen)}
+
+/* catch */
+.ai-answer{font-size:1.06rem;line-height:1.9}
+.ai-answer span{cursor:pointer;border-radius:4px;padding:1px 2px;transition:background .15s}
+.ai-answer span:hover{background:color-mix(in srgb,var(--marker) 30%,transparent)}
+.ai-answer span.flag{background:var(--marker);color:var(--marker-ink)}
+.ai-answer span.wrong{text-decoration:line-through wavy var(--pen);text-decoration-thickness:2px}
+.ai-answer span .cnt{font:700 .7rem var(--f-mono);vertical-align:super;color:var(--pen);margin-left:2px}
+.explain{display:grid;gap:8px;padding-left:0;margin:0;list-style:none}
+.explain li{border-left:3px solid var(--pen);padding-left:10px}
+
+/* exit wall */
+.wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:10px}
+.note{background:color-mix(in srgb,var(--marker) 35%,var(--sheet));border-radius:4px 4px 12px 4px;padding:12px;display:grid;gap:6px;font-size:.95rem;min-width:0;overflow-wrap:anywhere}
+.note .k{font:700 .68rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+label{font-weight:700;display:grid;gap:6px}
+
+.kahoot td{font-size:.85rem}
+.owner{border:1px dashed var(--pen);border-radius:10px;padding:14px;display:grid;gap:10px}
+footer{padding-block:40px;color:var(--ink-soft);font-size:.9rem;border-top:1px solid var(--rule);margin-top:40px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap">
+  <nav aria-label="Sections">
+    <a href="#plan">Plan</a><a href="#guess">A1</a><a href="#quiz">A2</a><a href="#core">Talk</a><a href="#sort">A3</a><a href="#lab">A4</a><a href="#catch">A5</a><a href="#exit">A6</a><a href="#kahoot" class="presenter">Kahoot</a>
+  </nav>
+  <div class="modes" role="group" aria-label="View mode">
+    <button id="m-pres" aria-pressed="true">Presenter</button>
+    <button id="m-part" aria-pressed="false">Participant</button>
+  </div>
+</div></div>
+
+<main class="wrap">
+<header class="hero">
+  <p class="eyebrow">Workshop · Room T6-401 · 60 minutes</p>
+  <h1>Opening &amp; <span class="mark">AI Cognition</span> for Higher Education</h1>
+  <div class="meta"><span>Prof. Tianqing ZHU</span><span>For educators, teachers &amp; students</span><span>AI-assisted English teaching</span></div>
+  <p class="thesis">AI does not replace university teachers. It takes the repetitive, trivial work off their desks, so their time goes to <b>academic guidance</b>, <b>critical thinking</b> and <b>research teaching</b>.</p>
+  <div class="join">
+    <div id="qr" aria-hidden="true"></div>
+    <div class="txt">
+      <p class="eyebrow">Participants: open this page on your phone</p>
+      <code id="joinurl">Host this file online to get a link and QR code</code>
+      <p class="status">No login needed. Your answers stay on your own phone.</p>
+    </div>
+  </div>
+</header>
+
+<!-- ================= PLAN ================= -->
+<section class="block" id="plan">
+  <div class="head"><span class="tag">RUN OF SHOW</span><h2>The hour, minute by minute</h2></div>
+  <div>
+    <div class="bar60" id="bar60" aria-label="60 minute timeline"></div>
+    <div class="ticks"><span>0′</span><span>15′</span><span>30′</span><span>45′</span><span>60′</span></div>
+  </div>
+  <div class="runtable"><table>
+    <thead><tr><th>Time</th><th>Segment</th><th>Format</th><th>Point it makes</th></tr></thead>
+    <tbody id="runbody"></tbody>
+  </table></div>
+  <details class="script presenter" open>
+    <summary>Before the session · checklist</summary>
+    <div class="body">
+      <p>☐ Put this HTML file online (GitHub Pages or Netlify Drop). The QR code at the top then points to your own link automatically. Nobody needs to log in.</p>
+      <p>☐ Project the page in <b>Presenter</b> mode. Participants use the QR code, which opens Participant mode (no script visible).</p>
+      <p>☐ A2: import the quiz into Kahoot (see <a href="#kahoot">Kahoot setup</a>). You need a free Kahoot account; players join at kahoot.it with a PIN and no account.</p>
+      <p>☐ A6: create a free Padlet board (or a Mentimeter open-ended question), paste its link into <code>WALL_URL</code> at the top of the script in this file, and re-upload.</p>
+      <p>☐ Open each tool in A4 once on the room network. Write &amp; Improve needs no login. Diffit and NotebookLM need a Google account. Yoodli needs a free sign-up. If Western tools are blocked, every prompt in A4 also works in DeepSeek, Kimi or Doubao.</p>
+      <p>☐ Ask people to bring a phone <i>and</i>, if possible, a laptop for A4.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ================= A1 GUESS ================= -->
+<section class="block" id="guess">
+  <div class="head"><span class="tag">A1</span><h2>Human or Machine?</h2><span class="time">00:00–05:00</span></div>
+  <p class="lede">A student wrote something. Then somebody gave feedback. Was it a teacher, or an AI? Vote, then see what the room thinks.</p>
+  <details class="script presenter" open>
+    <summary>Presenter script</summary>
+    <div class="body">
+      <p class="say">Good morning, everyone. A quick confession first: I'm not an education researcher. I'm a computer scientist. I build and study the kind of systems that are now turning up in your classrooms. So I won't tell you how to teach. I'll show you what these systems are actually good at, where they break, and how they can take work off your desk.</p>
+      <p class="do">Point to the QR code. Wait about 30 seconds while people join.</p>
+      <p class="say">First game: Human or Machine. You'll see a student's sentence and some feedback on it. Decide who wrote the feedback: a teacher or an AI. About twenty seconds a round.</p>
+      <p class="do">Run the 4 rounds. Before each reveal, ask: "Hands up for teacher… hands up for AI." Then press the answer on the projected screen and "Next round".</p>
+      <p class="say">Look at the pattern. The AI-style feedback is fast, polite, complete and correct. It fixes everything for you. The teacher-style feedback fixes less, but asks the one question that makes the student think. Keep that difference in mind, because it is the whole talk in one slide.</p>
+      <p class="do">Note for you, not the audience: the samples were prepared for this workshop to show typical patterns. Round 4 is deliberately ambiguous; use it to say "a well-prompted AI can do this too, but someone still has to check it".</p>
+    </div>
+  </details>
+  <div class="card" id="guess-card"></div>
+</section>
+
+<!-- ================= A2 QUIZ ================= -->
+<section class="block" id="quiz">
+  <div class="head"><span class="tag">A2</span><h2>Myth or Fact: the speed quiz</h2><span class="time">05:00–13:00</span></div>
+  <p class="lede">Eight questions, 20 seconds each. Faster correct answers score more. We play it live in Kahoot: go to <b>kahoot.it</b> and enter the PIN on the screen. If Kahoot is down, play the version below on your phone.</p>
+  <details class="script presenter" open>
+    <summary>Presenter script</summary>
+    <div class="body">
+      <p class="do">Launch the Kahoot you imported (see <a href="#kahoot">Kahoot setup</a>). Show the PIN.</p>
+      <p class="say">Time for a quiz. Go to kahoot dot it, type the PIN, pick a nickname, any nickname. Speed counts, and so does being right.</p>
+      <p class="do">About 5 minutes to play. Spend the last 3 minutes on two questions only. Backup if Kahoot fails: everyone plays the version on this page and shouts out their score.</p>
+      <p class="say">Question 1: will AI replace university teachers? Most of you said myth. Good. Here's the engineering reason.</p>
+      <p class="say">Question 7: how does a language model work? It doesn't look anything up. It predicts the next word, technically the next token, from patterns in a huge amount of text. That one fact explains both sides of the story: why it writes fluent, natural English, and why it can invent a reference with total confidence. It is optimised to sound right, not to be right.</p>
+      <p class="say">So the useful mental model is this: AI is a very fast, very well-read intern. Tireless, never bored, sometimes confidently wrong. You'd let an intern draft thirty vocabulary questions. You would not let an intern sign off a thesis grade.</p>
+    </div>
+  </details>
+  <div class="card" id="quiz-card"></div>
+</section>
+
+<!-- ================= CORE TALK ================= -->
+<section class="block" id="core">
+  <div class="head"><span class="tag">TALK</span><h2>Three jobs for AI in a university</h2><span class="time">13:00–18:00</span></div>
+  <p class="lede">The repetitive layer of teaching moves to AI. The judgement layer stays with people, and gets more of their time.</p>
+  <div class="stations">
+    <div class="card station"><span class="pill ai">LECTURE DESIGN</span><h3>Efficient lecture design</h3><p>First drafts of outlines, worked examples, readings at three levels, exercise banks. AI drafts; the teacher edits and decides.</p></div>
+    <div class="card station"><span class="pill co">ASSESSMENT</span><h3>Standardised assessment</h3><p>The same rubric applied the same way to essay 1 and essay 120, at 9 a.m. or 2 a.m. First-pass feedback and consistency checks. The final grade stays human.</p></div>
+    <div class="card station"><span class="pill hu">TUTORING</span><h3>Personalised academic tutoring</h3><p>A patient practice partner for every student, any hour, at their level: speaking practice, writing questions, reading support.</p></div>
+  </div>
+  <details class="script presenter" open>
+    <summary>Presenter script</summary>
+    <div class="body">
+      <p class="say">Here is the one idea I'd like you to take home. AI does not replace university teachers. It frees them from repetitive, trivial work, so they can focus on what only they can do: academic guidance, critical thinking, and research teaching.</p>
+      <p class="say">In computer science we've lived through this already. Compilers, then autocomplete, now AI coding assistants. Nobody fired the programmers. The boring part got automated, and the job moved up a level: design, review, judgement. Teaching is going through the same shift right now.</p>
+      <p class="say">Concretely, AI has three jobs in a university. One: <b>efficient lecture design</b>. It drafts your outline, your examples, a reading at B1, B2 and C1. You edit. Two: <b>standardised assessment</b>. It applies your rubric the same way to every essay and gives first-pass feedback. It never gets tired, and it never gets kinder after lunch. You make the final call. Three: <b>personalised tutoring</b>. Every student gets a patient speaking partner at midnight. That was never possible with one teacher and eighty students.</p>
+      <p class="say">And notice what's <i>not</i> on that list: deciding whether a research idea is original, mentoring a student who wants to quit, teaching someone to doubt a source. That's the part of the job we're freeing time <i>for</i>.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ================= A3 SORT ================= -->
+<section class="block" id="sort">
+  <div class="head"><span class="tag">A3</span><h2>Hand it over? The task card sort</h2><span class="time">18:00–25:00</span></div>
+  <p class="lede">Twelve real teaching tasks. Sort each one: give it to AI, let AI draft while you decide, or keep it human. Then compare with the people next to you.</p>
+  <div class="legend"><span class="pill ai">AI · hand it to AI</span><span class="pill co">CO · AI drafts, I decide</span><span class="pill hu">HU · keep it human</span></div>
+  <details class="script presenter" open>
+    <summary>Presenter script</summary>
+    <div class="body">
+      <p class="say">Twelve task cards. For each one, three choices: hand it to AI, let AI draft while you decide, or keep it human. Three minutes. There's no right answer, and that's the point.</p>
+      <p class="do">After 3 minutes, read out cards 3, 4, 6 and 8 one at a time. For each: "Hands up AI… co-pilot… human." Stop on the card where the room splits most.</p>
+      <p class="say">The unanimous ones are boring: nobody wants AI mentoring a student who wants to quit. The split ones are interesting. Who put "first-pass feedback on 120 essays" in Human? Why? … And who put it in AI? … This disagreement is exactly the conversation each department needs to have, task by task. The middle column, "AI drafts, I decide", is where most of the real gains are.</p>
+    </div>
+  </details>
+  <div class="card">
+    <div class="sortlist" id="sortlist"></div>
+    <div class="row"><span class="status" id="sort-status"></span></div>
+  </div>
+</section>
+
+<!-- ================= A4 LAB ================= -->
+<section class="block" id="lab">
+  <div class="head"><span class="tag">A4</span><h2>Tool Lab: write, speak, read</h2><span class="time">25:00–47:00</span></div>
+  <p class="lede">Three stations, six minutes each. Every station has a mission, the tools to use, and a ready-made prompt you can copy.</p>
+  <div class="card presenter">
+    <div class="row" style="justify-content:space-between">
+      <h3>Station timer</h3>
+      <div class="clock"><span class="face" id="clock">6:00</span>
+        <button class="btn small" id="clk-go">Start</button><button class="btn small" id="clk-reset">Reset</button>
+        <button class="btn small" data-min="2">2 min</button><button class="btn small" data-min="6">6 min</button></div>
+    </div>
+  </div>
+  <details class="script presenter" open>
+    <summary>Presenter script</summary>
+    <div class="body">
+      <p class="do">2 min brief · 3 rounds × 6 min (Writing → Speaking → Reading) · 2 min debrief. Groups of three; one laptop per group is enough.</p>
+      <p class="say">Now the hands-on part. Each station is one of the three jobs we just talked about. Writing is assessment: AI as a first-pass marker. Speaking is tutoring: AI as a practice partner. Reading is lecture design: AI as a materials factory. Six minutes per station; when the timer rings, move on.</p>
+      <p class="say">One rule for the writing station: tell the AI not to rewrite the student's text. A tutor that writes the essay for you isn't a tutor. Notice how much better the feedback gets when you say that.</p>
+      <p class="do">Debrief: "Hands up if you'd use the writing tool in class… speaking… reading." Ask the biggest group "what would you use it for on Monday?" and the smallest "what broke?"</p>
+    </div>
+  </details>
+  <div class="stations" id="stations"></div>
+</section>
+
+<!-- ================= A5 CATCH ================= -->
+<section class="block" id="catch">
+  <div class="head"><span class="tag">A5</span><h2>Catch the AI</h2><span class="time">47:00–53:00</span></div>
+  <p class="lede">A student asked an AI: <i>"What is the passive voice, and when should I use it in academic writing?"</i> The answer below sounds confident. Three sentences are wrong. Tap the ones you don't trust, then reveal.</p>
+  <details class="script presenter" open>
+    <summary>Presenter script</summary>
+    <div class="body">
+      <p class="say">Last challenge. This is an AI-style answer to a real student question. It reads well. Three sentences are wrong. Find them in two minutes.</p>
+      <p class="do">After reveal, go through the three errors. Pause on the made-up statistic.</p>
+      <p class="say">The grammar mistake is the easy one. The dangerous one is the statistic: a real book, real authors, and a precise number that doesn't come from them. That is what a hallucination looks like in the wild. It isn't random noise; it's a plausible-looking fact.</p>
+      <p class="say">This is the skill students now need most: verify, don't trust. A machine can't teach it, because the machine is the thing being checked. It's the critical-thinking work where our saved time should go.</p>
+    </div>
+  </details>
+  <div class="card">
+    <p class="ai-answer" id="ai-answer"></p>
+    <div class="row"><button class="btn primary" id="catch-go">Reveal</button><button class="btn" id="catch-reset">Clear my picks</button><span class="status" id="catch-status"></span></div>
+    <ul class="explain" id="explain" hidden></ul>
+  </div>
+</section>
+
+<!-- ================= A6 EXIT ================= -->
+<section class="block" id="exit">
+  <div class="head"><span class="tag">A6</span><h2>Exit ticket wall</h2><span class="time">53:00–58:00</span></div>
+  <p class="lede">Two lines before you leave. Draft them here, then post them on the room wall. Posts are anonymous.</p>
+  <details class="script presenter" open>
+    <summary>Presenter script</summary>
+    <div class="body">
+      <p class="say">Before you go, two lines on the wall. One repetitive task you'll hand to AI next week, and one thing you'll never hand over.</p>
+      <p class="do">Project the Padlet (or Mentimeter) board. Read three or four posts aloud. Then close.</p>
+      <p class="say">To sum up in one sentence: AI takes the first draft; you keep the final word. Let the machine do the repetitive work, and spend the time you get back on the things that made you want to teach in the first place: guiding, questioning, and doing research with your students. Thank you.</p>
+    </div>
+  </details>
+  <div class="card">
+    <div class="two">
+      <label for="exit-give">Next week I'll hand this to AI:<textarea id="exit-give" maxlength="200" placeholder="e.g. writing the gap-fill exercises for my reading class"></textarea></label>
+      <label for="exit-keep">I'll never hand this over:<textarea id="exit-keep" maxlength="200" placeholder="e.g. the conversation about a student's thesis idea"></textarea></label>
+    </div>
+    <div class="row"><button class="btn primary" id="exit-post">Copy my two lines</button><a class="btn" id="wall-link" href="#" target="_blank" rel="noopener" hidden>Open the room wall ↗</a><span class="status" id="exit-status"></span></div>
+  </div>
+</section>
+
+<!-- ================= KAHOOT ================= -->
+<section class="block presenter" id="kahoot">
+  <div class="head"><span class="tag">SETUP</span><h2>Kahoot setup for A2</h2></div>
+  <p class="lede">Do this once before the session, with a free Kahoot account. In Kahoot, choose Create → Kahoot → Import spreadsheet, download their template, and paste these rows under its header. Time limit is 20 s. The correct answer is given as a number from 1 to 4. Players join at kahoot.it with the PIN and need no account.</p>
+  <div class="row"><button class="btn primary" id="kahoot-copy">Copy rows for the Kahoot template</button><span class="status" id="kahoot-status"></span></div>
+  <div class="runtable"><table class="kahoot"><thead><tr><th>Question</th><th>Answer 1</th><th>Answer 2</th><th>Answer 3</th><th>Answer 4</th><th>Time</th><th>Correct</th></tr></thead><tbody id="kahoot-body"></tbody></table></div>
+  <textarea id="kahoot-tsv" readonly hidden></textarea>
+</section>
+
+<footer>No login, no tracking: anything you type stays in your own browser. Tools listed in A4 are third-party sites; free tiers change, so check each one before the session.</footer>
+</main>
+
+<script>
+/* Paste your Padlet or Mentimeter link here for the A6 exit wall, e.g. "https://padlet.com/yourname/xxxx" */
+const WALL_URL = "";
+
+/* ---------- content ---------- */
+const RUN = [
+  {id:"guess",m:5,t:"00–05",seg:"Opening + A1 Human or Machine?",fmt:"Phone vote",pt:"AI corrects; teachers make students think"},
+  {id:"quiz",m:8,t:"05–13",seg:"A2 Myth or Fact quiz",fmt:"Kahoot-style speed quiz",pt:"How LLMs work; why they hallucinate"},
+  {id:"core",m:5,t:"13–18",seg:"Talk: three jobs for AI",fmt:"Mini-lecture",pt:"Lecture design · assessment · tutoring"},
+  {id:"sort",m:7,t:"18–25",seg:"A3 Task card sort",fmt:"Phone card sort + live results",pt:"Which tasks move to AI, which stay human"},
+  {id:"lab",m:22,t:"25–47",seg:"A4 Tool Lab: write, speak, read",fmt:"3 stations × 6 min, hands-on",pt:"Try real AI tools for English teaching"},
+  {id:"catch",m:6,t:"47–53",seg:"A5 Catch the AI",fmt:"Spot the errors",pt:"Critical thinking: verify, don't trust"},
+  {id:"exit",m:5,t:"53–58",seg:"A6 Exit ticket wall",fmt:"Anonymous post wall",pt:"One task to hand over, one to keep"},
+  {id:"exit",m:2,t:"58–60",seg:"Close",fmt:"Talk",pt:"AI drafts; you keep the final word"}
+];
+
+const ROUNDS = [
+  {s:"Although the results was significant, but the sample size is small, so it cannot generalized.",
+   f:"Good attempt! There are a few issues: (1) “results was” should be “results were”. (2) Using both “although” and “but” is redundant. (3) “cannot generalized” should be “cannot be generalized”. Revised: “Although the results were significant, the sample is small, so they cannot be generalized.”",
+   a:"ai",why:"Fast, polite, complete and correct, and it rewrites the sentence for the student. Typical AI feedback."},
+  {s:"Although the results was significant, but the sample size is small, so it cannot generalized.",
+   f:"You've spotted the right limitation, and that's the hard part. Now: generalized to whom? Name the population you can't speak for, and your reader will trust you more. (Also check “results was”.)",
+   a:"hu",why:"It fixes one thing and pushes the thinking. It cares about the argument more than the grammar."},
+  {s:"Introduction: Online learning has many advantages and disadvantages. In this essay I will discuss them.",
+   f:"Your introduction is clear and well-structured. Consider adding a hook to engage the reader, and make sure each body paragraph supports your thesis with relevant evidence.",
+   a:"ai",why:"Generic advice that would fit almost any essay. Pleasant, but it doesn't show the writer read this particular text."},
+  {s:"Smith (2019) shows that peer feedback improves writing, so universities in our province should require it.",
+   f:"Smith studied primary-school pupils in Finland. Is that evidence for first-year university students here? Find one study closer to your context, or tell me why the gap doesn't matter.",
+   a:"hu",why:"Written by a teacher. A well-prompted AI that has the source can produce this too, but someone still has to check that Smith really studied Finnish pupils."}
+];
+
+const QUIZ = [
+  {q:"“AI will replace university teachers within ten years.”",o:["Fact","Myth","Only for language teaching","Only for large classes"],c:1},
+  {q:"Which task is the best fit for AI today?",o:["Deciding whether a PhD idea is original","Writing 30 gap-fill exercises from this week's reading","Comforting a stressed student","Choosing the course learning outcomes"],c:1},
+  {q:"An AI tool rates a student essay “CEFR B2”. What should the teacher do?",o:["Accept it; the model was trained on exams","Treat it as a first pass and spot-check a sample","Ignore it completely","Ask the AI to grade itself"],c:1},
+  {q:"In AI, “hallucination” means…",o:["Confident output that is false or made up","The model runs slowly","The model refuses to answer","The model can see images"],c:0},
+  {q:"Which is NOT one of the three key positions of AI in universities?",o:["Efficient lecture design","Standardised assessment","Personalised academic tutoring","Replacing the thesis supervisor"],c:3},
+  {q:"An essay has perfect English but no original idea. Best first step?",o:["Report it as AI cheating","Ask the student to talk through the argument for 3 minutes","Give full marks","Run an AI detector and trust the score"],c:1},
+  {q:"A large language model produces text by…",o:["Looking up answers in a fact database","Predicting the next token from patterns in training data","Searching Google every time","Copying textbooks word for word"],c:1},
+  {q:"Where should the time AI saves teachers go?",o:["More admin","Academic guidance, critical thinking, research teaching","More slides","Shorter semesters"],c:1}
+];
+const QTIME = 20;
+
+const CARDS = [
+  ["c1","Drafting 20 vocabulary questions from this week's reading"],
+  ["c2","Rewriting one text at three levels (B1, B2, C1)"],
+  ["c3","First-pass grammar feedback on 120 essays"],
+  ["c4","Applying one rubric consistently across four class sections"],
+  ["c5","Outlining next week's lecture slides"],
+  ["c6","Being a speaking-practice partner at 11 p.m."],
+  ["c7","Deciding the final grade of a master's thesis"],
+  ["c8","Judging whether a research question is original"],
+  ["c9","Mentoring a student who wants to drop out"],
+  ["c10","Teaching students to question a source"],
+  ["c11","Sending deadline reminder emails"],
+  ["c12","Setting the course's learning outcomes"]
+];
+const BINS = {ai:"AI",co:"CO",hu:"HU"};
+
+const SAMPLE_PARA = "Nowadays, artificial intelligence are used in many university. Many student use it for write their essay, and teachers worry that student will not learn anything. In my opinion, AI is a good tool because it help students to find mistakes quickly. However, if student only copy the answer from AI, they cannot improve their critical thinking. So, universities should make a clear rules about how to use AI in learning.";
+const SAMPLE_ABS = "This study examines how first-year university students use generative AI tools when revising academic essays in English. Drawing on screen recordings and interviews with 24 participants, we identify three patterns of use: surface editing, in which students accept grammar corrections without reading them; dialogic revision, in which students question the tool's suggestions; and delegation, in which students ask the tool to rewrite whole paragraphs. Dialogic revision was associated with the largest gains in argument quality between drafts. We argue that the pedagogical value of AI feedback depends less on the tool than on whether students are taught to interrogate it. (Sample abstract written for this workshop.)";
+
+const STATIONS = [
+  {k:"writing",title:"Writing",job:"Assessment",pill:"co",
+   steps:["Copy the sample paragraph below (B1-level student writing with errors).","Paste it into Write &amp; Improve. Note the CEFR level and the highlighted problems.","Now paste the tutor prompt into a chatbot. Compare: which feedback would help a student learn more?"],
+   tools:[["Write & Improve","https://writeandimprove.com","Cambridge. Free, no login. CEFR level + error highlights."],["QuillBot","https://quillbot.com","Grammar check and paraphrasing. Good for showing students alternatives."],["DeepSeek · Kimi · ChatGPT","https://chat.deepseek.com","Any chatbot works with the tutor prompt."]],
+   prompt:"You are an academic writing tutor for university students learning English.\nDo NOT rewrite my text. Instead give me:\n1. Your estimate of my CEFR level, in one line.\n2. The two problems that matter most, with one example of each from my text.\n3. Three questions that make me think harder about my argument.\n\nMy text:\n"+SAMPLE_PARA,
+   sample:SAMPLE_PARA},
+  {k:"speaking",title:"Speaking",job:"Tutoring",pill:"hu",
+   steps:["Open a chatbot with voice mode on your phone (ChatGPT, Gemini Live or Doubao).","Paste or say the role-play prompt. Do a 3-minute mock interview, out loud.","Optional: record a 1-minute self-introduction in Yoodli and look at the filler-word count and pace."],
+   tools:[["ChatGPT voice / Gemini Live","https://gemini.google.com","Free voice conversation; role-plays any scenario."],["Yoodli","https://yoodli.ai","AI speech coach: filler words, pacing, clarity. Free sign-up."],["ELSA Speak","https://elsaspeak.com","Pronunciation feedback down to individual sounds."]],
+   prompt:"Let's practise speaking. You are a professor interviewing me for a master's programme in education.\nRules: ask one question at a time, wait for my answer, keep each of your turns under 30 words, and don't correct me during the interview.\nAfter five questions, give me feedback on fluency, vocabulary range and grammar, with one example from what I actually said for each. Then give me one sentence I could say better, and the improved version."},
+  {k:"reading",title:"Reading",job:"Lecture design",pill:"ai",
+   steps:["Copy the sample abstract below (or use any paper abstract from your field).","In Diffit, paste it and generate a B1 / grade-8 version with vocabulary and questions.","Bonus: upload a PDF paper to NotebookLM and generate an Audio Overview, a podcast about the paper."],
+   tools:[["Diffit","https://web.diffit.me","Rewrites any text at a chosen reading level, with vocab lists and questions. Google login."],["NotebookLM","https://notebooklm.google.com","Upload papers; get a study guide, quiz, or podcast-style audio overview."],["Twee","https://twee.com","Generates ESL lesson materials from a topic, text or YouTube video."]],
+   prompt:"Here is an academic abstract. Make classroom materials for B1-level university students:\n1. A simplified version (max 100 words, B1 vocabulary).\n2. Five key academic words with student-friendly definitions and an example sentence each.\n3. Four comprehension questions: two factual, two that ask the student to evaluate the argument.\n\nAbstract:\n"+SAMPLE_ABS,
+   sample:SAMPLE_ABS}
+];
+
+const CATCH = [
+  {t:"The passive voice puts the receiver of an action in the subject position, as in “The data were collected in 2023.”",w:false},
+  {t:"Academic writing often uses the passive to focus on the process rather than the person who did it.",w:false},
+  {t:"The APA 7th edition manual bans the passive voice in all research papers.",w:true,why:"False. APA 7 encourages the active voice but explicitly allows the passive, for example when the actor is unknown or unimportant."},
+  {t:"The passive is formed with “be” plus the past participle of the main verb.",w:false},
+  {t:"For example, “The participants was interviewed twice” is a correct passive sentence.",w:true,why:"Grammar error inside the explanation: “participants was” should be “participants were”."},
+  {t:"According to Swales and Feak (2012), exactly 67% of sentences in published science articles are passive.",w:true,why:"Fabricated. The book and authors are real, but this precise figure is invented. This is what a hallucination looks like: plausible, specific and unsourced."},
+  {t:"A useful rule: use the active voice when the actor matters, and the passive when the action or result matters more.",w:false}
+];
+
+/* ---------- state (kept on each person's own device; no login, no server) ---------- */
+const S = {mine:{}};
+const LS = "aicog-v1";
+try{ const raw = localStorage.getItem(LS); if(raw) S.mine = JSON.parse(raw)||{}; }catch(e){}
+function persistLocal(){ try{ localStorage.setItem(LS, JSON.stringify(S.mine)); }catch(e){} }
+const $ = s=>document.querySelector(s);
+const el = (tag, attrs={}, ...kids)=>{ const n=document.createElement(tag); for(const [k,v] of Object.entries(attrs)){ if(k==="class") n.className=v; else if(k==="text") n.textContent=v; else if(k.startsWith("on")) n.addEventListener(k.slice(2),v); else n.setAttribute(k,v);} kids.forEach(k=>k!=null&&n.append(k)); return n; };
+
+function save(col, data){
+  S.mine[col] = data; persistLocal();
+  renderCol(col);
+}
+
+/* ---------- mode ---------- */
+function setMode(m){
+  document.body.classList.toggle("participant", m==="participant");
+  $("#m-pres").setAttribute("aria-pressed", m!=="participant");
+  $("#m-part").setAttribute("aria-pressed", m==="participant");
+}
+$("#m-pres").onclick=()=>setMode("presenter");
+$("#m-part").onclick=()=>setMode("participant");
+(function initMode(){
+  const h = location.hash.slice(1);
+  if(h==="presenter") setMode("presenter");
+  else if(["play","guess","quiz","sort","lab","catch","exit"].includes(h)) setMode("participant");
+})();
+
+/* ---------- plan ---------- */
+(function(){
+  const bar=$("#bar60"), body=$("#runbody");
+  RUN.forEach(r=>{
+    const a=el("a",{href:"#"+r.id,style:"flex:"+r.m,class:r.seg.match(/^A\d/)?"act":"",title:r.seg},el("b",{text:r.t}),el("span",{text:r.seg.replace(/^A\d /,"")}));
+    bar.append(a);
+    body.append(el("tr",{},el("td",{class:"t",text:r.t}),el("td",{},el("a",{href:"#"+r.id,text:r.seg})),el("td",{text:r.fmt}),el("td",{text:r.pt})));
+  });
+})();
+
+/* ---------- A1 guess ---------- */
+let gRound = 0;
+function renderGuess(){
+  const box=$("#guess-card"); box.textContent="";
+  const r=ROUNDS[gRound]; const mine=(S.mine.guess&&S.mine.guess.votes)||{};
+  const my=mine["r"+gRound];
+  box.append(el("div",{class:"row",style:"justify-content:space-between"},el("span",{class:"eyebrow",text:"Round "+(gRound+1)+" of "+ROUNDS.length})));
+  box.append(el("div",{},el("p",{class:"eyebrow",text:"Student wrote"}),el("p",{class:"student",text:r.s})));
+  box.append(el("div",{},el("p",{class:"eyebrow",text:"Feedback"}),el("p",{class:"feedback",text:r.f})));
+  const v=el("div",{class:"vote2"});
+  [["hu","A teacher"],["ai","An AI"]].forEach(([k,lab])=>{
+    v.append(el("button",{class:my===k?"pick":"",onclick:()=>{const votes={...mine,["r"+gRound]:k}; save("guess",{votes});}},lab));
+  });
+  box.append(v);
+  if(my){
+    box.append(el("div",{class:"reveal"},el("b",{text:(r.a==="ai"?"AI-style feedback. ":"Teacher feedback. ")+(my===r.a?"You got it. ":"Not this time. ")}),document.createTextNode(r.why)));
+  }
+  const nav=el("div",{class:"row"});
+  nav.append(el("button",{class:"btn small",onclick:()=>{gRound--;renderGuess();}},"Previous"));
+  if(gRound===0) nav.lastChild.disabled=true;
+  const nx=el("button",{class:"btn small primary",onclick:()=>{gRound++;renderGuess();}},"Next round");
+  if(gRound===ROUNDS.length-1) nx.disabled=true;
+  nav.append(nx); box.append(nav);
+}
+
+/* ---------- A2 quiz ---------- */
+const Q = {i:-1, t0:0, timer:null, picked:null, nick:"", score:0, answers:[]};
+(function restoreQuiz(){ const m=S.mine.quiz; if(m){ Q.nick=m.nick||""; Q.score=m.score||0; Q.answers=m.answers||[]; Q.i = Q.answers.length>=QUIZ.length ? QUIZ.length : -1; } })();
+function quizSave(){ return save("quiz",{nick:Q.nick, score:Q.score, answers:Q.answers, done:Q.answers.length}); }
+function renderQuiz(){
+  const box=$("#quiz-card"); box.textContent="";
+  if(Q.i===-1){
+    const inp=el("input",{type:"text",id:"nick",maxlength:"18",placeholder:"e.g. GrammarNinja",value:Q.nick});
+    const go=el("button",{class:"btn primary",onclick:()=>{const n=inp.value.trim(); if(!n){inp.focus();return;} Q.nick=n; Q.score=0; Q.answers=[]; Q.i=0; startQ();}},"Start quiz");
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter")go.click();});
+    box.append(el("label",{for:"nick"},"Your nickname",inp),el("div",{class:"row"},go,el("span",{class:"status",text:QUIZ.length+" questions · "+QTIME+" s each"})));
+    return;
+  }
+  if(Q.i>=QUIZ.length){
+    const right=Q.answers.filter(a=>a.ok).length;
+    box.append(el("p",{class:"eyebrow",text:"Finished"}),el("p",{class:"quiz-q",text:Q.nick+": "+Q.score+" points"}),el("p",{class:"muted",text:right+" of "+QUIZ.length+" correct. Tell the room your score!"}),
+      el("div",{class:"row"},el("button",{class:"btn",onclick:()=>{Q.i=-1;renderQuiz();}},"Play again")));
+    return;
+  }
+  const q=QUIZ[Q.i];
+  box.append(el("div",{class:"row",style:"justify-content:space-between"},el("span",{class:"eyebrow",text:"Question "+(Q.i+1)+" / "+QUIZ.length}),el("span",{class:"score",text:Q.score+" pts"})));
+  box.append(el("p",{class:"quiz-q",text:q.q}));
+  box.append(el("div",{class:"timer"},el("i",{id:"tbar"})));
+  const shapes=["▲","◆","●","■"];
+  const ans=el("div",{class:"answers"});
+  q.o.forEach((o,j)=>{
+    const b=el("button",{onclick:()=>answer(j)},el("span",{class:"sh",text:shapes[j]}),el("span",{text:o}));
+    if(Q.picked!==null){ b.disabled=true; if(j===q.c) b.classList.add("right"); else b.classList.add("dim"); }
+    ans.append(b);
+  });
+  box.append(ans);
+  if(Q.picked!==null){
+    const last=Q.answers[Q.answers.length-1];
+    box.append(el("div",{class:"row",style:"justify-content:space-between"},
+      el("b",{text: last.ok ? "Correct! +"+last.pts : (Q.picked===-1?"Time's up.":"Not quite.")}),
+      el("button",{class:"btn primary",onclick:()=>{Q.i++; if(Q.i<QUIZ.length) startQ(); else {Q.picked=null; renderQuiz();}}},Q.i===QUIZ.length-1?"See my score":"Next question")));
+  }
+}
+function startQ(){
+  Q.picked=null; Q.t0=performance.now(); renderQuiz();
+  clearInterval(Q.timer);
+  Q.timer=setInterval(()=>{
+    const left=Math.max(0,QTIME-(performance.now()-Q.t0)/1000);
+    const b=document.getElementById("tbar"); if(b) b.style.width=(left/QTIME*100)+"%";
+    if(left<=0) answer(-1);
+  },100);
+}
+function answer(j){
+  if(Q.picked!==null) return;
+  clearInterval(Q.timer);
+  const el2=(performance.now()-Q.t0)/1000;
+  const ok = j===QUIZ[Q.i].c;
+  const pts = ok ? Math.round(1000*(0.5+0.5*Math.max(0,QTIME-el2)/QTIME)) : 0;
+  Q.picked=j; Q.score+=pts; Q.answers.push({q:Q.i,a:j,ok,pts});
+  renderQuiz(); quizSave();
+}
+/* ---------- A3 sort ---------- */
+function renderSort(){
+  const box=$("#sortlist"); box.textContent="";
+  const mine=(S.mine.sort&&S.mine.sort.choices)||{};
+  CARDS.forEach(([id,label],i)=>{
+    const seg=el("div",{class:"seg",role:"group","aria-label":label});
+    Object.entries(BINS).forEach(([k,l])=>seg.append(el("button",{"data-b":k,"aria-pressed":String(mine[id]===k),onclick:()=>save("sort",{choices:{...mine,[id]:k}})},l)));
+    box.append(el("div",{class:"sortitem"},el("span",{text:(i+1)+". "+label}),seg));
+  });
+  const c={ai:0,co:0,hu:0}; Object.values(mine).forEach(v=>{ if(c[v]!=null) c[v]++; });
+  $("#sort-status").textContent = Object.keys(mine).length+" / "+CARDS.length+" sorted · AI "+c.ai+" · CO "+c.co+" · HU "+c.hu;
+}
+
+/* ---------- A4 lab ---------- */
+async function copyText(text, statusEl, fallbackEl){
+  try{ await navigator.clipboard.writeText(text); statusEl.textContent="Copied"; }
+  catch(e){ if(fallbackEl){ fallbackEl.hidden=false; fallbackEl.focus(); fallbackEl.select(); } statusEl.textContent="Press Ctrl/Cmd+C to copy the selected text"; }
+  setTimeout(()=>{statusEl.textContent="";},2500);
+}
+function renderLab(){
+  const wrap=$("#stations"); wrap.textContent="";
+  STATIONS.forEach(st=>{
+    const c=el("div",{class:"card station"});
+    c.append(el("span",{class:"pill "+st.pill,text:st.job.toUpperCase()}));
+    c.append(el("h3",{},el("span",{text:st.title}),el("span",{class:"time",text:"6 min"})));
+    const ol=el("ol"); st.steps.forEach(s=>{const li=el("li"); li.innerHTML=s; ol.append(li);}); c.append(el("div",{},el("p",{class:"eyebrow",text:"Mission"}),ol));
+    const tl=el("div",{class:"tools"}); st.tools.forEach(([n,u,d])=>tl.append(el("a",{href:u,target:"_blank",rel:"noopener"},el("b",{text:n+" ↗"}),el("small",{text:d}))));
+    c.append(el("div",{},el("p",{class:"eyebrow",text:"Tools"}),tl));
+    if(st.sample){
+      const stx=el("span",{class:"status"}); const ta=el("textarea",{readonly:"",hidden:""}); ta.value=st.sample;
+      c.append(el("div",{class:"row"},el("button",{class:"btn small",onclick:()=>copyText(st.sample,stx,ta)},"Copy sample text"),stx),ta);
+    }
+    const ps=el("span",{class:"status"}); const pta=el("textarea",{readonly:"",hidden:""}); pta.value=st.prompt;
+    c.append(el("div",{},el("p",{class:"eyebrow",text:"Prompt"}),el("div",{class:"prompt",text:st.prompt})));
+    c.append(el("div",{class:"row"},el("button",{class:"btn small primary",onclick:()=>copyText(st.prompt,ps,pta)},"Copy prompt"),ps),pta);
+    wrap.append(c);
+  });
+}
+/* timer */
+const CLK={total:360,left:360,run:false,h:null,end:0};
+function drawClock(){ const m=Math.floor(CLK.left/60), s=Math.floor(CLK.left%60); const f=$("#clock"); f.textContent=m+":"+String(s).padStart(2,"0"); f.classList.toggle("low",CLK.left<=30); $("#clk-go").textContent=CLK.run?"Pause":"Start"; }
+$("#clk-go").onclick=()=>{ if(CLK.run){ CLK.run=false; clearInterval(CLK.h); } else { CLK.run=true; CLK.end=Date.now()+CLK.left*1000; CLK.h=setInterval(()=>{ CLK.left=Math.max(0,(CLK.end-Date.now())/1000); if(CLK.left<=0){CLK.run=false;clearInterval(CLK.h);} drawClock(); },250);} drawClock(); };
+$("#clk-reset").onclick=()=>{ CLK.run=false; clearInterval(CLK.h); CLK.left=CLK.total; drawClock(); };
+document.querySelectorAll("[data-min]").forEach(b=>b.onclick=()=>{ CLK.total=+b.dataset.min*60; $("#clk-reset").click(); });
+
+/* ---------- A5 catch ---------- */
+let catchPicks = new Set((S.mine.catch&&S.mine.catch.flags)||[]);
+let catchRevealed = !!(S.mine.catch&&S.mine.catch.revealed);
+function renderCatch(){
+  const p=$("#ai-answer"); p.textContent="";
+  CATCH.forEach((c,i)=>{
+    const sp=el("span",{tabindex:"0",role:"button","aria-pressed":String(catchPicks.has(i)),class:(catchPicks.has(i)?"flag ":"")+(catchRevealed&&c.w?"wrong":""),text:c.t});
+    const tog=()=>{ if(catchRevealed) return; catchPicks.has(i)?catchPicks.delete(i):catchPicks.add(i); renderCatch(); };
+    sp.addEventListener("click",tog); sp.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tog();}});
+    p.append(sp, document.createTextNode(" "));
+  });
+  const ex=$("#explain"); ex.textContent="";
+  if(catchRevealed){
+    const hits=CATCH.filter((c,i)=>c.w&&catchPicks.has(i)).length, fp=[...catchPicks].filter(i=>!CATCH[i].w).length;
+    $("#catch-status").textContent="You caught "+hits+" of 3"+(fp?" · "+fp+" false alarm"+(fp>1?"s":""):"");
+    CATCH.forEach(c=>{ if(c.w) ex.append(el("li",{},el("b",{text:"“"+c.t.slice(0,48)+"…” "}),document.createTextNode(c.why))); });
+    ex.hidden=false; $("#catch-go").disabled=true;
+  } else { ex.hidden=true; $("#catch-go").disabled=false; $("#catch-status").textContent=catchPicks.size+" flagged"; }
+}
+$("#catch-go").onclick=()=>{ catchRevealed=true; save("catch",{flags:[...catchPicks],revealed:true}); };
+$("#catch-reset").onclick=()=>{ catchPicks=new Set(); catchRevealed=false; save("catch",{flags:[],revealed:false}); };
+
+/* ---------- A6 exit ---------- */
+(function(){ const m=S.mine.exit; if(m){ $("#exit-give").value=m.give||""; $("#exit-keep").value=m.keep||""; } })();
+if(WALL_URL){ $("#wall-link").href=WALL_URL; $("#wall-link").hidden=false; }
+$("#exit-post").onclick=()=>{
+  const give=$("#exit-give").value.trim(), keep=$("#exit-keep").value.trim();
+  if(!give&&!keep){ $("#exit-status").textContent="Write at least one line first."; return; }
+  save("exit",{give,keep});
+  const text="Hand to AI: "+give+"\nKeep human: "+keep;
+  const ta=el("textarea",{readonly:"",hidden:""}); ta.value=text; $("#exit-post").after(ta);
+  copyText(text,$("#exit-status"),ta).then(()=>{ if(WALL_URL) $("#exit-status").textContent="Copied. Now paste it on the room wall."; });
+};
+
+/* ---------- kahoot ---------- */
+(function(){
+  const tb=$("#kahoot-body"); const lines=[];
+  QUIZ.forEach(q=>{ tb.append(el("tr",{},el("td",{text:q.q}),...q.o.map(o=>el("td",{text:o})),el("td",{class:"t",text:"20"}),el("td",{class:"t",text:String(q.c+1)})));
+    lines.push([q.q,...q.o,"20",String(q.c+1)].join("\t")); });
+  const tsv=lines.join("\n"); $("#kahoot-tsv").value=tsv;
+  $("#kahoot-copy").onclick=()=>copyText(tsv,$("#kahoot-status"),$("#kahoot-tsv"));
+})();
+
+/* ---------- render dispatch ---------- */
+function renderCol(c){
+  if(c==="guess") renderGuess();
+  else if(c==="sort") renderSort();
+  else if(c==="catch") renderCatch();
+}
+renderGuess(); renderQuiz(); renderSort(); renderLab(); renderCatch(); drawClock();
+
+/* join link + QR: points at wherever this file is hosted */
+if(/^https?:$/.test(location.protocol)){
+  const joinUrl = location.href.split("#")[0]+"#play";
+  $("#joinurl").textContent = joinUrl;
+  try{ new QRCode($("#qr"),{text:joinUrl,width:264,height:264,colorDark:"#18213b",colorLight:"#ffffff"}); }catch(e){ $("#qr").hidden=true; }
+} else { $("#qr").hidden=true; }
+
+if(location.hash.length>1){ const t=document.getElementById(location.hash.slice(1)); if(t) setTimeout(()=>t.scrollIntoView(),50); }
+</script>
+</body>
+</html>
