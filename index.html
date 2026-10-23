@@ -65,6 +65,11 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .join{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:var(--sheet);border:1px solid var(--rule);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
 .join #qr{background:#fff;padding:8px;border-radius:8px;line-height:0}
 .join #qr img,.join #qr canvas{width:132px;height:132px}
+.wallqr{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:14px;border-radius:12px;background:color-mix(in srgb,var(--marker) 30%,var(--sheet))}
+.wallqr #wall-qr{background:#fff;padding:8px;border-radius:8px;line-height:0}
+.wallqr #wall-qr img,.wallqr #wall-qr canvas{width:160px;height:160px}
+.wallqr .txt{flex:1;min-width:0;display:grid;gap:6px}
+.wallqr code{font:600 .8rem var(--f-mono);word-break:break-all}
 .join .txt{flex:1;min-width:0;display:grid;gap:6px}
 .join code{font:600 .9rem var(--f-mono);word-break:break-all}
 
@@ -240,7 +245,7 @@ footer{padding-block:40px;color:var(--ink-soft);font-size:.9rem;border-top:1px s
       <p>☐ Put this HTML file online (GitHub Pages or Netlify Drop). The QR code at the top then points to your own link automatically. Nobody needs to log in.</p>
       <p>☐ Project the page in <b>Presenter</b> mode. Participants use the QR code, which opens Participant mode (no script visible).</p>
       <p>☐ A2: import the quiz into Kahoot (see <a href="#kahoot">Kahoot setup</a>). You need a free Kahoot account; players join at kahoot.it with a PIN and no account.</p>
-      <p>☐ A6: create a free Padlet board (or a Mentimeter open-ended question), paste its link into <code>WALL_URL</code> at the top of the script in this file, and re-upload.</p>
+      <p>☐ A6: create a free Padlet board (or a Mentimeter open-ended question), its link is set in <code>WALL_URL</code> (done) and its QR code shows in A6.</p>
       <p>☐ Open each tool in A4 once on the room network. Write &amp; Improve needs no login. Diffit and NotebookLM need a Google account. Yoodli needs a free sign-up. If Western tools are blocked, every prompt in A4 also works in DeepSeek, Kimi or Doubao.</p>
       <p>☐ Ask people to bring a phone <i>and</i>, if possible, a laptop for A4.</p>
     </div>
@@ -374,7 +379,7 @@ footer{padding-block:40px;color:var(--ink-soft);font-size:.9rem;border-top:1px s
     <summary>Presenter script</summary>
     <div class="body">
       <p class="say">Before you go, two lines on the wall. One repetitive task you'll hand to AI next week, and one thing you'll never hand over.</p>
-      <p class="do">Project the Padlet (or Mentimeter) board. Read three or four posts aloud. Then close.</p>
+      <p class="do">Show the Padlet QR code below so people can scan it. Then open the Padlet board on the projector, read three or four posts aloud, and close.</p>
       <p class="say">To sum up in one sentence: AI takes the first draft; you keep the final word. Let the machine do the repetitive work, and spend the time you get back on the things that made you want to teach in the first place: guiding, questioning, and doing research with your students. Thank you.</p>
     </div>
   </details>
@@ -382,6 +387,14 @@ footer{padding-block:40px;color:var(--ink-soft);font-size:.9rem;border-top:1px s
     <div class="two">
       <label for="exit-give">Next week I'll hand this to AI:<textarea id="exit-give" maxlength="200" placeholder="e.g. writing the gap-fill exercises for my reading class"></textarea></label>
       <label for="exit-keep">I'll never hand this over:<textarea id="exit-keep" maxlength="200" placeholder="e.g. the conversation about a student's thesis idea"></textarea></label>
+    </div>
+    <div class="wallqr" id="wall-box" hidden>
+      <div id="wall-qr" aria-hidden="true"></div>
+      <div class="txt">
+        <p class="eyebrow">Room wall · Padlet · no login</p>
+        <p><b>1.</b> Write your two lines and tap “Copy my two lines”.<br><b>2.</b> Scan this code or tap “Open the room wall”.<br><b>3.</b> Tap + on the wall, paste, and post.</p>
+        <code id="wall-url"></code>
+      </div>
     </div>
     <div class="row"><button class="btn primary" id="exit-post">Copy my two lines</button><a class="btn" id="wall-link" href="#" target="_blank" rel="noopener" hidden>Open the room wall ↗</a><span class="status" id="exit-status"></span></div>
   </div>
@@ -401,7 +414,7 @@ footer{padding-block:40px;color:var(--ink-soft);font-size:.9rem;border-top:1px s
 
 <script>
 /* Paste your Padlet or Mentimeter link here for the A6 exit wall, e.g. "https://padlet.com/yourname/xxxx" */
-const WALL_URL = "";
+const WALL_URL = "https://padlet.com/blankingsnow/a6-exit-ticket-wall-s024rxz2fm4k4vdrmkld";
 
 /* ---------- content ---------- */
 const RUN = [
@@ -675,7 +688,11 @@ $("#catch-reset").onclick=()=>{ catchPicks=new Set(); catchRevealed=false; save(
 
 /* ---------- A6 exit ---------- */
 (function(){ const m=S.mine.exit; if(m){ $("#exit-give").value=m.give||""; $("#exit-keep").value=m.keep||""; } })();
-if(WALL_URL){ $("#wall-link").href=WALL_URL; $("#wall-link").hidden=false; }
+if(WALL_URL){
+  $("#wall-link").href=WALL_URL; $("#wall-link").hidden=false;
+  $("#wall-box").hidden=false; $("#wall-url").textContent=WALL_URL;
+  try{ new QRCode($("#wall-qr"),{text:WALL_URL,width:320,height:320,colorDark:"#18213b",colorLight:"#ffffff"}); }catch(e){ $("#wall-qr").hidden=true; }
+}
 $("#exit-post").onclick=()=>{
   const give=$("#exit-give").value.trim(), keep=$("#exit-keep").value.trim();
   if(!give&&!keep){ $("#exit-status").textContent="Write at least one line first."; return; }
